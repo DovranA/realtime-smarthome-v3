@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      :root {
+        user-select: none;
+      }
+      .checkbox-button {
+        display: inline-block;
+        position: relative;
+        padding: 10px 20px;
+        background-color: #3498db; /* Change this to your desired button color */
+        color: #fff;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .checkbox-button input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .checkbox-button:hover {
+        background-color: #2980b9; /* Change this to the button color on hover */
+      }
+
+      .checkbox-button input:checked + span {
+        background-color: #2ecc71; /* Change this to the button color when checked */
+      }
+
+      .checkbox-button span {
+        position: relative;
+        z-index: 1;
+      }
+
+      .checkbox-button:active {
+        transform: translateY(1px);
+      }
+    </style>
+  </head>
+  <body>
+    <label class="checkbox-button">
+      <input type="checkbox" id="14" onclick="handleClick(this)" />
+      ON
+    </label>
+    <label class="checkbox-button">
+      <input type="checkbox" id="15" onclick="handleClick(this)" />
+      ON
+    </label>
+    <br />
+    <input
+      type="range"
+      id="4"
+      min="0"
+      max="18"
+      value="0"
+      onchange="handleChange(this)"
+    />
+  </body>
+  <script src="./socket.io-2.3.0.js"></script>
+  <!-- <script src="./axios.js"></script> -->
+  <script>
+    const socket = io('http://127.0.0.1:8000?type=user')
+    const socketEmit = (id, state) => {
+      socket.emit('userSend', { id, state })
+    }
+    socket.on('userReceiver', (data) => {
+      console.log(data)
+      // const element = document.getElementById(String(data.id)).parentElement
+      // if (data.state === 1) {
+      //   element.style.backgroundColor = '#3498db'
+      //   element.innerText = 'ON'
+      // } else {
+      //   element.style.backgroundColor = '#2ecc71'
+      //   element.innerText = 'OFF'
+      // }
+    })
+    const handleClick = (btn) => {
+      socketEmit(Number(btn.id), btn.checked ? 1 : 0)
+    }
+    const handleChange = (range) => {
+      console.log(range.value)
+      socket.emit('stoveSend', Number(range.value))
+    }
+  </script>
+</html>
